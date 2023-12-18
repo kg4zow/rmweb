@@ -1,11 +1,5 @@
 # TODO
 
-* Rename `download` command to `backup`
-
-* `list`: file size, page count
-
-* Change `-V` option to `version` command
-
 * Handle duplicate output filenames
     * throw a warning/error?
     * detect if output file already exists

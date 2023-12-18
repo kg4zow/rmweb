@@ -81,8 +81,8 @@ Options
 // Show version info
 
 func do_version( args ...string ) {
-    fmt.Printf( "%s\nVersion %s for %s/%s\n" ,
-        prog_name , prog_version , runtime.GOOS , runtime.GOARCH )
+    fmt.Printf( "%s-%s-%s version %s\n" ,
+        prog_name , runtime.GOOS , runtime.GOARCH , prog_version )
 
     if prog_desc != "" {
         fmt.Printf( "Built %s from %s\n" , prog_date , prog_desc )

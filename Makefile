@@ -31,15 +31,15 @@ ALL_ARCHES := darwin/amd64 darwin/arm64 \
 #
 # First/default target: build for *this* machine's OS/ARCH
 
-$(NAME): out/$(MYOS)-$(MYARCH)/$(NAME)
-	ln -sf "out/$(MYOS)-$(MYARCH)/$(NAME)" "$(NAME)"
+$(NAME): out/$(NAME)-$(MYOS)-$(MYARCH)
+	ln -sf "out/$(NAME)-$(MYOS)-$(MYARCH)" "$(NAME)"
 
 ########################################
 # Build OS-ARCH/NAME for all combinations listed in ARCHES above
 # - if OS is "windows", add ".exe" to the name
 
-all: $(foreach A,$(ALL_ARCHES),out/$(subst /,-,$(A))/$(NAME)$(if $(A:windows%=),,.exe))
-	ln -sf "out/$(MYOS)-$(MYARCH)/$(NAME)" "$(NAME)"
+all: $(foreach A,$(ALL_ARCHES),out/$(NAME)-$(subst /,-,$(A))$(if $(A:windows%=),,.exe))
+	ln -sf "out/$(NAME)-$(MYOS)-$(MYARCH)" "$(NAME)"
 
 ########################################
 # Remove all previously compiled binaries and symlinks
@@ -51,9 +51,9 @@ clean:
 #
 # How to build OS-ARCH/NAME for any OS/ARCH combination
 
-out/%/$(NAME) out/%/$(NAME).exe: go.mod Makefile version.txt $(SOURCES)
-	GOOS=$(shell echo "$@" | awk -F '[\-/]' '{print $$2}' ) \
-	GOARCH=$(shell echo "$@" | awk -F '[\-/]' '{print $$3}' ) \
+out/$(NAME)-%: go.mod Makefile version.txt $(SOURCES)
+	GOOS=$(shell echo "$@" | awk -F '[\-/]' '{print $$3}' ) \
+	GOARCH=$(shell echo "$@" | awk -F '[\-\./]' '{print $$4}' ) \
 	go build -o $@ \
 	-ldflags "-X main.prog_name=$(NAME) \
 	        -X main.prog_version=$(VERSION) \
@@ -65,7 +65,7 @@ out/%/$(NAME) out/%/$(NAME).exe: go.mod Makefile version.txt $(SOURCES)
 # Specific rule for reMarkable 2 tablet ... linux/arm with GOARM=7
 # - add "linux/arm" to ALL_ARCHES to build this
 
-out/linux-arm/$(NAME): go.mod Makefile version.txt $(SOURCES)
+out/$(NAME)-linux-arm: go.mod Makefile version.txt $(SOURCES)
 	GOOS=linux GOARCH=arm GOARM=7 \
 	go build -o $@ \
 	-ldflags "-X main.prog_name=$(NAME) \
