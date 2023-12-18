@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// rm2-download-pdfs/download_pdf.go
+// rmweb/download_pdf.go
 // John Simpson <jms1@jms1.net> 2023-12-17
 //
 // Download a PDF file from a reMarkable tablet

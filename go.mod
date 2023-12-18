@@ -1,3 +1,3 @@
-module kg4zow/rm2-download-pdfs
+module kg4zow/rmweb
 
 go 1.21

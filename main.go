@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// rm2-download-pdfs/main.go
+// rmweb/main.go
 // John Simpson <jms1@jms1.net> 2023-12-16
 
 package main
@@ -27,7 +27,7 @@ var (
 
     // Hard-coded, not set by 'make'
 
-    prog_url        string = "https://github.com/kg4zow/rm2-download-pdfs/"
+    prog_url        string = "https://github.com/kg4zow/rmweb/"
 )
 
 ///////////////////////////////////////////////////////////////////////////////

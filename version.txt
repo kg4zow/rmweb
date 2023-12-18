@@ -1,4 +1,4 @@
-0.01
+0.02
 
 The first line of this file is used as the "version number" in the resulting
 executable. The rest of the file (such as this comment) is ignored.

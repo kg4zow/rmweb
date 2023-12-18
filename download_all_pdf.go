@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// rm2-download-pdfs/download_all_pdf.go
+// rmweb/download_all_pdf.go
 // John Simpson <jms1@jms1.net> 2023-12-17
 
 package main

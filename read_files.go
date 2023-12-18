@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// rm2-download-pdfs/read_files.go
+// rmweb/read_files.go
 // John Simpson <jms1@jms1.net> 2023-12-16
 //
 // List files on a reMarkable tablet
