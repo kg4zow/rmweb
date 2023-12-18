@@ -18,17 +18,19 @@ import (
 func do_list( the_files map[string]DocInfo ) {
 
     ////////////////////////////////////////
-    // Build and sort a list of filenames
+    // Build a list of filenames
     // - the keys in the_files are UUIDs
 
-    l_name := 4     // length of "Name" header
+    var l_name  int = 4     // length of "Name" header
+    var l_size  int = 4     // length of "Size" header
+    var l_pages int = 5     // length of "Pages" header
 
     files_by_name := make( []string , 0 , len( the_files ) )
     for uuid := range the_files {
         files_by_name = append( files_by_name , uuid )
 
         ////////////////////////////////////////
-        // Also find the length of the longest full_name
+        // Find the length of the longest full_name
 
         l := len( the_files[uuid].full_name )
         if the_files[uuid].folder {
@@ -38,7 +40,27 @@ func do_list( the_files map[string]DocInfo ) {
         if l > l_name {
             l_name = l
         }
+
+        ////////////////////////////////////////
+        // Find the length of the longest "size"
+
+        l = len( fmt.Sprintf( "%d" , the_files[uuid].size ) )
+        if l > l_size {
+            l_size = l
+        }
+
+        ////////////////////////////////////////
+        // Find the length of the longest page count
+
+        l = len( fmt.Sprintf( "%d" , the_files[uuid].pages ) )
+        if l > l_pages {
+            l_pages = l
+        }
+
     }
+
+    ////////////////////////////////////////
+    // Sort the list by fullname
 
     sortby_name := func( a int , b int ) bool {
         a_name := the_files[files_by_name[a]].full_name
@@ -48,21 +70,35 @@ func do_list( the_files map[string]DocInfo ) {
     sort.SliceStable( files_by_name , sortby_name )
 
     ////////////////////////////////////////
-    // Process entries
+    // Print entries
 
-    h_uuid  := strings.Repeat( "-" , 36 )
-    h_name  := strings.Repeat( "-" , l_name )
+    fmt.Printf( "%-36s %*s %*s %s\n" ,
+        "UUID" ,
+        l_size  , "Size" ,
+        l_pages , "Pages" ,
+        "Name" )
+    fmt.Printf( "%s %s %s %s\n" ,
+        strings.Repeat( "-" , 36      ) ,
+        strings.Repeat( "-" , l_size  ) ,
+        strings.Repeat( "-" , l_pages ) ,
+        strings.Repeat( "-" , l_name  ) )
 
-    fmt.Printf( "%-36s %s\n" , "UUID" , "Name" )
-    fmt.Printf( "%s %s\n" , h_uuid , h_name )
 
     for _,uuid := range files_by_name {
-        suffix := ""
         if the_files[uuid].folder {
-            suffix = "/"
-        }
+            fmt.Printf( "%-36s %*s %*s %s/\n" ,
+                uuid ,
+                l_size  , "" ,
+                l_pages , "" ,
+                the_files[uuid].full_name )
 
-        fmt.Printf( "%-36s %s%s\n" , uuid , the_files[uuid].full_name , suffix )
+        } else {
+            fmt.Printf( "%-36s %*d %*d %s\n" ,
+                uuid ,
+                l_size  , the_files[uuid].size  ,
+                l_pages , the_files[uuid].pages ,
+                the_files[uuid].full_name )
+        }
     }
 
 }

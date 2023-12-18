@@ -15,6 +15,7 @@ import (
 //    "ioutil"
     "log"
     "net/http"
+//    "strconv"
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,19 +90,25 @@ func read_files() ( map[string]DocInfo ) {
             ////////////////////////////////////////
             // Get info about this item
 
-            id      := v["ID"].(string)
-            parent  := v["Parent"].(string)
-            folder  := bool( v["Type"].(string) == "CollectionType" )
-            name    := v["VissibleName"].(string)
+            var size    int64
+            var pages   int
+
+            id          := v["ID"].(string)
+            parent      := v["Parent"].(string)
+            folder      := bool( v["Type"].(string) == "CollectionType" )
+            name        := v["VissibleName"].(string)
+
+            if ! folder {
+                fmt.Sscan( v["sizeInBytes"].(string) , &size )
+                pages       = int( v["pageCount"].(float64) )
+            }
 
             if do_debug {
                 fmt.Printf( "%s  %-5t  %s\n" , id , folder , name )
             }
 
             ////////////////////////////////////////
-            // Build tablet and user-facing names for this item
-
-            tablet_name := this_dir + "/" + id
+            // Build user-facing name for this item
 
             parent_name := ""
             if parent != "" {
@@ -124,7 +131,8 @@ func read_files() ( map[string]DocInfo ) {
             f.folder        = folder
             f.name          = name
             f.full_name     = full_name
-            f.tablet_name   = tablet_name
+            f.size          = int64( size )
+            f.pages         = int64( pages )
 
             rv[f.id] = f
 

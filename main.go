@@ -46,7 +46,8 @@ type DocInfo struct {
     folder          bool
     name            string
     full_name       string
-    tablet_name     string
+    size            int64
+    pages           int64
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,12 +62,11 @@ Download PDF files from a reMarkable tablet
 
 Commands
 
-    list        List all files on tablet
-    download    Download all files on tablet, to PDF files
+    list        List files on tablet
+    backup      Download ALL files on tablet, to PDF files
+    version     Show the program's version info
 
 Options
-
-    -V      Show version info.
 
     -h      Show this help message.
 `
@@ -105,12 +105,10 @@ func main() {
     // Parse command line options
 
     var helpme  = false
-    var version = false
 
     flag.Usage = usage
     flag.BoolVar( &helpme   , "h" , helpme   , "" )
     flag.BoolVar( &do_debug , "D" , do_debug , "" )
-    flag.BoolVar( &version  , "V" , version  , "" )
     flag.Parse()
 
     ////////////////////////////////////////
@@ -121,19 +119,12 @@ func main() {
     }
 
     ////////////////////////////////////////
-    // If they used '-V', show version info
-
-    if ( version ) {
-        do_version()
-        os.Exit( 0 )
-    }
-
-    ////////////////////////////////////////
     // Figure out which command we're being asked to run
 
     if len( flag.Args() ) > 0 {
         switch flag.Args()[0] {
-            case "download" : download_all_pdf( read_files() )
+            case "version"  : do_version()
+            case "backup"   : backup( read_files() )
             case "list"     : do_list( read_files() )
             default         : usage()
         }
