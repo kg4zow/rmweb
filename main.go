@@ -35,6 +35,7 @@ var (
 // Values will be set by command line options
 
 var do_debug        bool    = false
+var do_overwrite    bool    = false
 var tablet_addr     string  = "10.11.99.1"
 
 ////////////////////////////////////////
@@ -67,6 +68,8 @@ Commands
     version     Show the program's version info
 
 Options
+
+    -f      Overwrite existing files.
 
     -h      Show this help message.
 `
@@ -107,8 +110,9 @@ func main() {
     var helpme  = false
 
     flag.Usage = usage
-    flag.BoolVar( &helpme   , "h" , helpme   , "" )
-    flag.BoolVar( &do_debug , "D" , do_debug , "" )
+    flag.BoolVar( &helpme       , "h" , helpme       , "" )
+    flag.BoolVar( &do_debug     , "D" , do_debug     , "" )
+    flag.BoolVar( &do_overwrite , "f" , do_overwrite , "" )
     flag.Parse()
 
     ////////////////////////////////////////

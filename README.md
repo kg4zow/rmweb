@@ -2,6 +2,8 @@
 
 John Simpson `<jms1@jms1.net>` 2023-12-17
 
+Last updated 2023-12-19
+
 This program lists all documents on a reMarakble tablet, or downloads them all as PDF files, using the tablet's built-in web interface.
 
 I threw this together after reading [this question](https://www.reddit.com/r/RemarkableTablet/comments/18js4wo/any_way_to_transfer_all_my_files_to_an_ipad_app/) on Reddit.
@@ -24,18 +26,30 @@ One of the ideas on my list is a more "general" command line utility, written in
 
 ## Installing the Program
 
-### Download from Github
+### Download
 
-In the Github repo, there are directories under [`out/`](https://github.com/kg4zow/rmweb/tree/main/out) which contain compiled executables for the following platforms:
+The executables are stored in my [Keybase](https://keybase.io/) public directory. If you don't use Keybase, the [`https://jms1.pub/`](https://jms1.pub/) web site is served from that directory, using [Keybase Sites](https://book.keybase.io/sites).
 
-* `darwin-amd64` = macOS, Intel
-* `darwin-arm64` = macOS, ARM (aka Apple Silicon)
-* `linux-386` = Linux, 32-bit Intel
-* `linux-amd64` = Linux, 64-bit Intel
-* `windows-386` = Windows, 32-bit Intel
-* `windows-amd64` = Windows, 64-bit Intel
+The examples below assume that a `$HOME/bin/` directory exists, and is in your `PATH`.
 
-Download whichever binaries you need for the system(s) where you'll be running the program. Store them in a directory in your `PATH`, and make sure their permissions are set to be executable (i.e. "`chmod u=rwx,go=rx rmweb`").
+* **Keybase**: copy whichever binaries you need from `/keybase/public/jms1/rmweb/` to wherever you need them. You may want to rename your copy to just `rmweb`.
+
+    ```
+    $ cd ~/bin/
+    $ cp /keybase/public/jms1/rmweb/v0.04/rmweb-darwin-arm64 rmweb
+    $ chmod u=rwx,go=rx rmweb
+    ```
+
+* **Web**: download whichever binaries you need from [`https://jms1.pub/rmweb/`](https://jms1.pub/rmweb/). Again, you may want to rename your copy to just `rmweb`.
+
+    ```
+    $ cd ~/bin/
+    $ curl -o rmweb https://jms1.pub/rmweb/v0.04/rmweb-darwin-arm64
+    $ chmod u=rwx,go=rx rmweb
+    ```
+
+However you do it, store the executable in a directory in your `PATH`, and make sure its permissions are set to be executable.
+
 
 ### Compiling the Program
 
@@ -61,24 +75,35 @@ If you want to compile the program from source ...
 
 This will build the correct binary for your computer, under the `out/` directory. It will also create `rmweb` in the current dirctory, as a symbolic link to that binary.
 
-Note that you could also run "`make all`" to build binaries for a list of architectures. (This is what I do before committing changes and pushing them to Github.) The list of architectures in set in the "`ALL_ARCHES :=`" line in `Makefile`, and currently includes the list shown above.
+Note that you could also run "`make all`" to build binaries for a list of architectures. (This is how I build the executables I store in Keybase.) The list of architectures is set in the "`ALL_ARCHES :=`" line in `Makefile`, and currently includes the list shown above.
 
 You can see a list of all *possible* `GOOS`/`GOARCH` combinations in your installed copy of `go` by running "`go tool dist list`".
 
 
 ## Running the program
 
+The examples below assume that when you installed the executable, you renamed it to "`rmweb`". If not, you'll need to adjust the commands below to use whatever name you gave it.
+
+### Check the version
+
+The "`rmweb version`" command will show you the version number, along with information about the specific code it was built from in the git repo.
+
+```
+$ rmweb version
+rmweb-darwin-arm64 version 0.04
+Built 2023-12-18T17:44:17Z from v0.04-0-g17c101b
+https://github.com/kg4zow/rmweb/
+```
+
 ### Set up the tablet
 
-* Connect the tablet via USB port.
+**Connect the tablet via USB cable.**
 
-    The program has the `10.11.99.1` IP address hard-coded into it. I wrote it with the expectation that the IP *could* be change-able in the future, but reMarkable makes it difficult to access the web interface over anything *other than* the USB cable (which is actually a GOOD THING&#x2122; from a security standpoint), it didn't make sense to add a command line option to change the IP it connects to.
+The program has the `10.11.99.1` IP address hard-coded into it. I wrote it with the expectation that the IP *could* be change-able in the future, but reMarkable makes it difficult to access the web interface over anything *other than* the USB cable (which is actually a GOOD THING&#x2122; from a security standpoint), it didn't make sense to add a command line option to change the IP it connects to.
 
-* Make sure the tablet is not sleeping.
+**Make sure the tablet is not sleeping, and that the web interface is enabled.**
 
-* Make sure the web interface is enabled. See "Settings &#x2192; Storage" on the tablet.
-
-    Note that you won't be able to turn the web interface on unless the tablet is connected to a computer via the USB cable.
+See "Settings &#x2192; Storage" on the tablet. Note that you won't be able to turn the web interface on unless the tablet is connected to a computer via the USB cable.
 
 ### List files on the tablet
 
@@ -86,27 +111,30 @@ To list the files on the tablet, use "`rmweb list`".
 
 ```
 $ rmweb list
-UUID                                 Name
------------------------------------- -----------------------------------
-22e6d931-c205-4d86-b022-04b6a0527b67 /Amateur Radio/
-34f04076-4733-40bc-983d-6a92b41a2728 /Amateur Radio/D-STAR
-9d5198b0-ce76-4f58-ba0a-a1a058678695 /Amateur Radio/RTL-SDR
-89f3cbbd-dba2-46aa-bc66-debdf97b915a /Documentation to write
-f67c74d2-7d23-4587-95bd-7a6e8ebaed2c /Ebooks/
-cc2135a3-08ea-4ae5-be77-8f455b039451 /Ebooks/The Art of Unix Programming
-702ef913-16a0-47b1-806e-1769f251b06b /Ebooks/The Cathedral & the Bazaar
+UUID                                    Size Pages Name
+------------------------------------ ------- ----- -----------------------------------
+22e6d931-c205-4d86-b022-04b6a0527b67               /Amateur Radio/
+34f04076-4733-40bc-983d-6a92b41a2728  311475     7 /Amateur Radio/D-STAR
+9d5198b0-ce76-4f58-ba0a-a1a058678695  277447     1 /Amateur Radio/RTL-SDR
+89f3cbbd-dba2-46aa-bc66-debdf97b915a 1431776     8 /Documentation to write
+f67c74d2-7d23-4587-95bd-7a6e8ebaed2c               /Ebooks/
+cc2135a3-08ea-4ae5-be77-8f455b039451 8025642   684 /Ebooks/The Art of Unix Programming
+702ef913-16a0-47b1-806e-1769f251b06b 4241185   306 /Ebooks/The Cathedral & the Bazaar
 ...
-9e6891eb-2558-4e70-b6fc-d03b2d75614b /Quick sheets
-383dad70-b9db-4a04-a275-be17cfc6bc8c /ReMarkable 2 Info
-225a451f-61c9-4ffb-96ad-cbe7b7bb530c /TODO
-015deb02-0589-462a-bc98-3034d7d23628 /Work/
-0d318d48-d638-4c4c-9e29-98bac57bb658 /Work/2023-11 Daily
-66d3acae-9697-4a10-b827-3e619af36fae /Work/2023-12 Daily
+9e6891eb-2558-4e70-b6fc-d03b2d75614b 5961550    52 /Quick sheets
+383dad70-b9db-4a04-a275-be17cfc6bc8c 2658181    27 /ReMarkable 2 Info
+225a451f-61c9-4ffb-96ad-cbe7b7bb530c  597041     3 /TODO
+015deb02-0589-462a-bc98-3034d7d23628               /Work/
+0d318d48-d638-4c4c-9e29-98bac57bb658 3203221    21 /Work/2023-11 Daily
+66d3acae-9697-4a10-b827-3e619af36fae 1692264    10 /Work/2023-12 Daily
 ```
 
-The UUID values are the internal identifiers for each document. The files within the tablet that make up each document all have this as part of their filename. If you're curious, this is explain in more detail on [this page](https://remarkable.jms1.info/info/filesystem.html). You may never need to know this value, but if you *do* need them, there they are.
+The UUID values are the internal identifiers for each document. The files within the tablet that make up each document, all have this as part of their filename. If you're curious, this is explained in more detail on [this page](https://remarkable.jms1.info/info/filesystem.html). You may never need to know this value, but if you *do* need it, there it is.
 
-### Download documents to PDF files
+The size of each document is calculated by the tablet itself. It *looks like* it's the total of the sizes of all files which make up that document, including pen strokes and page thumbnail images. This is not the size you can expect the PDF to be if you download the file, from what I've seen the downloaded PDFs end up being anywhere from 1.5 to 5 times this size.
+
+
+### Download all documents to PDF files
 
 To download the documents as PDF files, first `cd` into the directory where you want to download the files. The directory doesn't have to be empty, but if it's not, the program will overwrite files which already exist with the same names.
 
@@ -115,10 +143,10 @@ $ mkdir ~/rm2-backup
 $ cd ~/rm2-backup/
 ```
 
-Then, run "`rmweb download`".
+Then, run "`rmweb backup`".
 
 ```
-$ rmweb download
+$ rmweb backup
 Creating    './Amateur Radio' ... ok
 Downloading './Amateur Radio/D-STAR.pdf' ... 1792627 ... ok
 Downloading './Amateur Radio/RTL-SDR.pdf' ... 120895 ... ok
@@ -136,3 +164,5 @@ Downloading './Work/2023-12 Daily.pdf' ... 2464473 ... ok
 ```
 
 As each file downloads, the program shows a counter of how many bytes have been read from the tablet. For larger files you'll notice a time delay before this counter starts. This is because the program uses the same API used by the [`http://10.11.99.1/`](http://10.11.99.1) web interface, and this is when the tablet is building the PDF file.
+
+**By default**, if an output file already exists, the program will add "`-1`", "`-2`", etc. to the filename until it finds a name which doesn't already exist. If you want to *overwrite* any existing files, use "`rmweb -f backup`".

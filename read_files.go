@@ -114,7 +114,11 @@ func read_files() ( map[string]DocInfo ) {
             if parent != "" {
                 parent_name = rv[parent].full_name
             }
+
             full_name := parent_name + "/" + name
+            if full_name[0] == '/' {
+                full_name = full_name[1:]
+            }
 
             if do_debug {
                 fmt.Printf( "id='%s'\n        name='%s'\n      parent='%s'\n parent_name='%s'\n        full_name='%s'\n\n" ,

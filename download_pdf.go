@@ -10,7 +10,7 @@ package main
 import (
     "fmt"
     "io"
-    "log"
+    "io/fs"
     "net/http"
     "os"
     "strings"
@@ -45,6 +45,62 @@ func (pt *PassThru) Read( p []byte ) ( int , error ) {
 
 func download_pdf( uuid string , localfile string ) {
 
+    ////////////////////////////////////////////////////////////
+    // If the output filename contains any directory names,
+    // make sure any necessary directories exist.
+
+    for n := 1 ; n < len( localfile ) ; n ++ {
+        if localfile[n] == '/' {
+            dir := localfile[:n]
+
+            if do_debug {
+                fmt.Printf( "checking dir='%s'\n" , dir )
+            }
+
+            ////////////////////////////////////////
+            // Check the directory
+
+            s,err := os.Stat( dir )
+            if os.IsNotExist( err ) {
+                ////////////////////////////////////////
+                // doesn't exist yet - create it
+
+                fmt.Printf( "Creating    '%s' ..." , dir )
+
+                err := os.Mkdir( dir , 0755 )
+                if err != nil {
+                    panic( fmt.Sprintf( "ERROR: %v" , err ) )
+                }
+
+                fmt.Println( "ok" )
+            } else if err != nil {
+                ////////////////////////////////////////
+                // os.Stat() had some other error
+
+                panic( fmt.Sprintf( "ERROR: os.Stat('%s'): %v\n" , dir , err ) )
+            } else if ( ( s.Mode() & fs.ModeDir ) != 0 ) {
+                ////////////////////////////////////////
+                // exists and is a directory
+
+                if do_debug {
+                    fmt.Printf( "DEBUG '%s' exists and is a directory\n" , dir )
+                }
+            } else {
+                ////////////////////////////////////////
+                // exists and is not a directory
+
+                panic( fmt.Sprintf( "ERROR: '%s' exists and is not a directory\n" , dir ) )
+                os.Exit( 1 )
+            }
+
+        } // if localfile[n] == '/'
+    } // for n
+
+    ////////////////////////////////////////////////////////////
+    // Download the file
+
+    fmt.Printf( "Downloading '%s' ... " , localfile )
+
     ////////////////////////////////////////
     // Request the file
 
@@ -52,7 +108,7 @@ func download_pdf( uuid string , localfile string ) {
 
     resp, err := http.Get( url )
     if err != nil {
-        log.Fatal( err )
+        panic( fmt.Sprintf( "ERROR: %v" , err ) )
     }
 
     defer resp.Body.Close()
@@ -62,7 +118,7 @@ func download_pdf( uuid string , localfile string ) {
 
     dest, err := os.Create( localfile )
     if err != nil {
-        log.Fatal( err )
+        panic( fmt.Sprintf( "ERROR: os.Create('%s'): %v" , localfile , err ) )
     }
 
     defer dest.Close()
@@ -72,13 +128,13 @@ func download_pdf( uuid string , localfile string ) {
 
     var src io.Reader = &PassThru{ Reader: resp.Body }
 
-    n, err := io.Copy( dest , src )
+    total, err := io.Copy( dest , src )
     if err != nil {
-        log.Fatal( err )
+        panic( fmt.Sprintf( "ERROR: os.Copy(): %v" , err ) )
     }
 
     ////////////////////////////////////////
     // done
 
-    fmt.Printf( "%d ... ok\n" , n )
+    fmt.Printf( "%d ... ok\n" , total )
 }
