@@ -20,6 +20,11 @@ MYOS    := $(shell go env GOOS )
 MYARCH  := $(shell go env GOARCH )
 
 ########################################
+# Where binaries will be published
+
+PUBDIR  := "/keybase/public/jms1/rmweb"
+
+########################################
 # Which OS/ARCH combinations will be built by 'make all'
 # - run 'go tool dist list' to see all available combinations
 
@@ -73,3 +78,20 @@ out/$(NAME)-linux-arm: go.mod Makefile version.txt $(SOURCES)
 	        -X main.prog_date=$(NOW) \
 	        -X main.prog_hash=$(HASH) \
 	        -X main.prog_desc=$(DESC)"
+
+###############################################################################
+#
+# Push (publish) executables
+
+push: all
+	TAG="v$$( head -1 version.txt )" ; \
+	if [[ -e $(PUBDIR)/$$TAG ]] ; \
+	then \
+		echo "ERROR: $(PUBDIR)/$$TAG already exists" ; \
+		exit 1 ; \
+	else \
+		mkdir $(PUBDIR)/$$TAG && \
+		cp -v out/* $(PUBDIR)/$$TAG/ && \
+		chmod -x $(PUBDIR)/$$TAG/* && \
+		( cd $(PUBDIR)/ && ./.reindex ) ; \
+	fi
