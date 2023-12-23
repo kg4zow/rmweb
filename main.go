@@ -37,8 +37,6 @@ var (
 var flag_debug      bool    = false
 var flag_overwrite  bool    = false
 var flag_collapse   bool    = false
-
-// future
 var tablet_addr     string  = "10.11.99.1"
 
 ////////////////////////////////////////
@@ -79,6 +77,11 @@ Options
             All PDFs will be written to the current directory.
 
     -f      Overwrite existing files.
+
+    -I ___  Specify the tablet's IP address. Default is '10.11.99.1',
+            which the tablet uses when connected via USB cable. Note that
+            unless you've "hacked" your tablet, the web interface is not
+            available via any interface other than the USB cable.
 
     -h      Show this help message.
 
@@ -139,10 +142,11 @@ func main() {
     var helpme  = false
 
     flag.Usage = usage
-    flag.BoolVar( &helpme         , "h" , helpme         , "" )
-    flag.BoolVar( &flag_debug     , "D" , flag_debug     , "" )
-    flag.BoolVar( &flag_overwrite , "f" , flag_overwrite , "" )
-    flag.BoolVar( &flag_collapse  , "c" , flag_collapse  , "" )
+    flag.BoolVar  ( &helpme         , "h" , helpme         , "" )
+    flag.BoolVar  ( &flag_debug     , "D" , flag_debug     , "" )
+    flag.BoolVar  ( &flag_overwrite , "f" , flag_overwrite , "" )
+    flag.BoolVar  ( &flag_collapse  , "c" , flag_collapse  , "" )
+    flag.StringVar( &tablet_addr    , "I" , tablet_addr    , "" )
     flag.Parse()
 
     ////////////////////////////////////////
@@ -167,6 +171,5 @@ func main() {
     } else {
         usage()
     }
-
 
 }
