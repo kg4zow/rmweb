@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v0.06 - 2023-12-22
+
+* Added `download` command
+    * by UUID or by substring match in "VissibleName"
+    * handles multiple substring match patterns
+    * same "-1" handling for duplicate output files
+* Added `-c` option to "flatten" folder structure
+* Added "pattern searching" (UUID or filename substring) to `list` command
+* Deprecated `backup` command, use `download` with no pattern instead
+* Updated `list` command to do the same UUID/filename search as `download`
+* Added `-I` option to set tablet IP address
+    * only useful for tablets which have been "hacked" to make the web
+      interface available over wifi or other interfaces
+
 ## v0.05 - 2023-12-19
 
 * Set things up to automate "publishing" new binaries to Keybase

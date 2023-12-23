@@ -99,9 +99,19 @@ https://github.com/kg4zow/rmweb/
 
 **Connect the tablet via USB cable.**
 
-The program has the `10.11.99.1` IP address hard-coded into it. I wrote it with the expectation that the IP *could* be change-able in the future, but reMarkable makes it difficult to access the web interface over anything *other than* the USB cable (which is actually a GOOD THING&#x2122; from a security standpoint), it didn't make sense to add a command line option to change the IP it connects to.
+The program uses the web interface to talk to the tablet, and reMarkable sets things up so that the web interface is only available over the USB interface.
 
-**Make sure the tablet is not sleeping, and that the web interface is enabled.**
+> &#x2139;&#xFE0F; If your tablet is "hacked" and the web interface is available over some other IP, you can use the "`-I`" (uppercase "i") option to specify that IP, like so:
+>
+> ```
+> $ rmweb -I 192.0.2.7 list
+> ```
+
+**Make sure the tablet is not sleeping.**
+
+Fairly obvious.
+
+**Make sure the web interface is enabled.**
 
 See "Settings &#x2192; Storage" on the tablet. Note that you won't be able to turn the web interface on unless the tablet is connected to a computer via the USB cable.
 
@@ -133,7 +143,7 @@ The UUID values are the internal identifiers for each document. The files within
 
 The size of each document is calculated by the tablet itself. It *looks like* it's the total of the sizes of all files which make up that document, including pen strokes and page thumbnail images. This is not the size you can expect the PDF to be if you download the file, from what I've seen the downloaded PDFs end up being anywhere from half to five times this size.
 
-### Download one or more documents to PDF files
+### Download documents to PDF files
 
 To download one or more individual documents as PDF files, first `cd` into the directory where you want to download the files.
 
@@ -142,7 +152,7 @@ $ mkdir ~/rm2-backup
 $ cd ~/rm2-backup/
 ```
 
-Then, run "`rmweb download xxx`", where "`xxx`" is either a UUID ...
+Then, run "`rmweb download PATTERN`". The pattern can be either a UUID ...
 
 ```
 $ rmweb download 9e6891eb-2558-4e70-b6fc-d03b2d75614b
@@ -152,26 +162,51 @@ Downloading 'Quick sheets.pdf' ... 2577411 ... ok
 ... or a portion of the filename.
 
 ```
-$ rmweb download 'quick sheets'
+$ rmweb download quick
 Downloading 'Quick sheets-1.pdf' ... 2577411 ... ok
 ```
 
+Notes about patterns:
 
+* If multiple patterns are specified, all files which match *any* of the patterns will be downloaded.
 
+* If you need to specify a pattern containing spaces, you should quote it. For example ...
+
+    ```
+    $ rmweb download quick brown fox
+    ```
+
+    This command would download any documents with "quick" in the name, OR with "brown" in the name, OR with "fox" in the name.
+
+    ```
+    $ rmweb download "quick brown fox"
+    ```
+
+    This command would only download documents with the string "quick brown fox" in their name.
+
+* Filename searches are case-*in*sensitive, i.e. "`test`", "`Test`", "`TEST`", and "`tEsT`" all match each other.
+
+* If a pattern *looks like* a UUID (i.e. has the "8-4-4-4-12 hex digits" structure), the program will look it up by UUID rather than searching for it by filename.
+
+* If no patterns are specified (i.e. just "`rmweb download`" by itself), the program will download ALL documents.
+
+Other notes:
+
+* As each file downloads, the program shows a counter of how many bytes have been read from the tablet. For larger files you'll notice a time delay before this counter starts. This is because the program uses the same API used by the [`http://10.11.99.1/`](http://10.11.99.1) web interface, and this delay is when the tablet is building the PDF file.
+
+* If an output file already exists, the program will add "`-1`", "`-2`", etc. to the filename until it finds a name which doesn't already exist. If you want to *overwrite* existing files, use the "`-f`" option.
+
+    ```
+    $ rmweb -f download quick
+    Downloading 'Quick sheets.pdf' ... 2577411 ... ok
+    ```
 
 ### Download ALL documents to PDF files
 
-To download the documents as PDF files, first `cd` into the directory where you want to download the files.
+To download ALL documents as PDF files, use the "`download`" command without a pattern.
 
 ```
-$ mkdir ~/rm2-backup
-$ cd ~/rm2-backup/
-```
-
-Then, run "`rmweb backup`".
-
-```
-$ rmweb backup
+$ rmweb download
 Creating    'Amateur Radio' ... ok
 Downloading 'Amateur Radio/D-STAR.pdf' ... 1792627 ... ok
 Downloading 'Amateur Radio/RTL-SDR.pdf' ... 120895 ... ok
@@ -188,6 +223,3 @@ Downloading 'Work/2023-11 Daily.pdf' ... 5114386 ... ok
 Downloading 'Work/2023-12 Daily.pdf' ... 2464473 ... ok
 ```
 
-As each file downloads, the program shows a counter of how many bytes have been read from the tablet. For larger files you'll notice a time delay before this counter starts. This is because the program uses the same API used by the [`http://10.11.99.1/`](http://10.11.99.1) web interface, and this is when the tablet is building the PDF file.
-
-**By default**, if an output file already exists, the program will add "`-1`", "`-2`", etc. to the filename until it finds a name which doesn't already exist. If you want to *overwrite* any existing files, use "`rmweb -f backup`".
