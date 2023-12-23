@@ -129,14 +129,39 @@ cc2135a3-08ea-4ae5-be77-8f455b039451 8025642   684 /Ebooks/The Art of Unix Progr
 66d3acae-9697-4a10-b827-3e619af36fae 1692264    10 /Work/2023-12 Daily
 ```
 
-The UUID values are the internal identifiers for each document. The files within the tablet that make up each document, all have this as part of their filename. If you're curious, this is explained in more detail on [this page](https://remarkable.jms1.info/info/filesystem.html). You may never need to know this value, but if you *do* need it, there it is.
+The UUID values are the internal identifiers for each document. The files within the tablet that make up each document, all have this as part of their filename. If you're curious, [this page](https://remarkable.jms1.info/info/filesystem.html) has a lot more detail.
 
-The size of each document is calculated by the tablet itself. It *looks like* it's the total of the sizes of all files which make up that document, including pen strokes and page thumbnail images. This is not the size you can expect the PDF to be if you download the file, from what I've seen the downloaded PDFs end up being anywhere from 1.5 to 5 times this size.
+The size of each document is calculated by the tablet itself. It *looks like* it's the total of the sizes of all files which make up that document, including pen strokes and page thumbnail images. This is not the size you can expect the PDF to be if you download the file, from what I've seen the downloaded PDFs end up being anywhere from half to five times this size.
+
+### Download one or more documents to PDF files
+
+To download one or more individual documents as PDF files, first `cd` into the directory where you want to download the files.
+
+```
+$ mkdir ~/rm2-backup
+$ cd ~/rm2-backup/
+```
+
+Then, run "`rmweb download xxx`", where "`xxx`" is either a UUID ...
+
+```
+$ rmweb download 9e6891eb-2558-4e70-b6fc-d03b2d75614b
+Downloading 'Quick sheets.pdf' ... 2577411 ... ok
+```
+
+... or a portion of the filename.
+
+```
+$ rmweb download 'quick sheets'
+Downloading 'Quick sheets-1.pdf' ... 2577411 ... ok
+```
 
 
-### Download all documents to PDF files
 
-To download the documents as PDF files, first `cd` into the directory where you want to download the files. The directory doesn't have to be empty, but if it's not, the program will overwrite files which already exist with the same names.
+
+### Download ALL documents to PDF files
+
+To download the documents as PDF files, first `cd` into the directory where you want to download the files.
 
 ```
 $ mkdir ~/rm2-backup
@@ -147,20 +172,20 @@ Then, run "`rmweb backup`".
 
 ```
 $ rmweb backup
-Creating    './Amateur Radio' ... ok
-Downloading './Amateur Radio/D-STAR.pdf' ... 1792627 ... ok
-Downloading './Amateur Radio/RTL-SDR.pdf' ... 120895 ... ok
-Downloading './Documentation to write.pdf' ... 674706 ... ok
-Creating    './Ebooks' ... ok
-Downloading './Ebooks/The Art of Unix Programming.pdf' ... 7856878 ... ok
-Downloading './Ebooks/The Cathedral & the Bazaar.pdf' ... 1382013 ... ok
+Creating    'Amateur Radio' ... ok
+Downloading 'Amateur Radio/D-STAR.pdf' ... 1792627 ... ok
+Downloading 'Amateur Radio/RTL-SDR.pdf' ... 120895 ... ok
+Downloading 'Documentation to write.pdf' ... 674706 ... ok
+Creating    'Ebooks' ... ok
+Downloading 'Ebooks/The Art of Unix Programming.pdf' ... 7856878 ... ok
+Downloading 'Ebooks/The Cathedral & the Bazaar.pdf' ... 1382013 ... ok
 ...
-Downloading './Quick sheets.pdf' ... 2577411 ... ok
-Downloading './ReMarkable 2 Info.pdf' ... 1451907 ... ok
-Downloading './TODO.pdf' ... 258263 ... ok
-Creating    './Work' ... ok
-Downloading './Work/2023-11 Daily.pdf' ... 5114386 ... ok
-Downloading './Work/2023-12 Daily.pdf' ... 2464473 ... ok
+Downloading 'Quick sheets.pdf' ... 2577411 ... ok
+Downloading 'ReMarkable 2 Info.pdf' ... 1451907 ... ok
+Downloading 'TODO.pdf' ... 258263 ... ok
+Creating    'Work' ... ok
+Downloading 'Work/2023-11 Daily.pdf' ... 5114386 ... ok
+Downloading 'Work/2023-12 Daily.pdf' ... 2464473 ... ok
 ```
 
 As each file downloads, the program shows a counter of how many bytes have been read from the tablet. For larger files you'll notice a time delay before this counter starts. This is because the program uses the same API used by the [`http://10.11.99.1/`](http://10.11.99.1) web interface, and this is when the tablet is building the PDF file.

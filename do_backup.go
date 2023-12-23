@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// rmweb/backup.go
+// rmweb/do_backup.go
 // John Simpson <jms1@jms1.net> 2023-12-17
 
 package main
@@ -16,7 +16,9 @@ import (
 //
 // Download PDFs of all documents on a tablet
 
-func backup( the_files map[string]DocInfo ) {
+func do_backup() {
+
+    the_files := read_files()
 
     ////////////////////////////////////////
     // Build and sort a list of filenames
@@ -44,7 +46,7 @@ func backup( the_files map[string]DocInfo ) {
             // Download the file
 
             lname := the_files[uuid].full_name + ".pdf"
-            if ! do_overwrite {
+            if ! flag_overwrite {
                 lname = safe_filename( lname )
             }
 

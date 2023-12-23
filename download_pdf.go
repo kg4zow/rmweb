@@ -53,7 +53,7 @@ func download_pdf( uuid string , localfile string ) {
         if localfile[n] == '/' {
             dir := localfile[:n]
 
-            if do_debug {
+            if flag_debug {
                 fmt.Printf( "checking dir='%s'\n" , dir )
             }
 
@@ -82,7 +82,7 @@ func download_pdf( uuid string , localfile string ) {
                 ////////////////////////////////////////
                 // exists and is a directory
 
-                if do_debug {
+                if flag_debug {
                     fmt.Printf( "DEBUG '%s' exists and is a directory\n" , dir )
                 }
             } else {

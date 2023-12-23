@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// rmweb/list.go
+// rmweb/do_list.go
 // John Simpson <jms1@jms1.net> 2023-12-17
 
 package main
@@ -15,7 +15,9 @@ import (
 //
 // do_list
 
-func do_list( the_files map[string]DocInfo ) {
+func do_list() {
+
+    the_files := read_files()
 
     ////////////////////////////////////////
     // Build a list of filenames

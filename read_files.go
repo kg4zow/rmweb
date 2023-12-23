@@ -12,10 +12,9 @@ import (
     "encoding/json"
     "fmt"
     "io"
-//    "ioutil"
     "log"
     "net/http"
-//    "strconv"
+    "strings"
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,7 +52,7 @@ func read_files() ( map[string]DocInfo ) {
         content_type    := "application/json"
         buf             := bytes.NewBufferString( "" )
 
-        if do_debug {
+        if flag_debug {
             fmt.Println( "POST " + url )
         }
 
@@ -103,7 +102,7 @@ func read_files() ( map[string]DocInfo ) {
                 pages       = int( v["pageCount"].(float64) )
             }
 
-            if do_debug {
+            if flag_debug {
                 fmt.Printf( "%s  %-5t  %s\n" , id , folder , name )
             }
 
@@ -115,14 +114,14 @@ func read_files() ( map[string]DocInfo ) {
                 parent_name = rv[parent].full_name
             }
 
-            full_name := parent_name + "/" + name
-            if full_name[0] == '/' {
-                full_name = full_name[1:]
+            full_name := name
+
+            if ! flag_collapse {
+                full_name = parent_name + "/" + name
             }
 
-            if do_debug {
-                fmt.Printf( "id='%s'\n        name='%s'\n      parent='%s'\n parent_name='%s'\n        full_name='%s'\n\n" ,
-                    id , name , parent , parent_name , full_name )
+            if full_name[0] == '/' {
+                full_name = full_name[1:]
             }
 
             ////////////////////////////////////////
@@ -137,6 +136,7 @@ func read_files() ( map[string]DocInfo ) {
             f.full_name     = full_name
             f.size          = int64( size )
             f.pages         = int64( pages )
+            f.find_by       = strings.ToLower( name )
 
             rv[f.id] = f
 

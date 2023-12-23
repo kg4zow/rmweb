@@ -41,7 +41,7 @@ func file_exists( name string ) bool {
 
 func safe_filename( name string ) string {
 
-    if do_debug {
+    if flag_debug {
         fmt.Printf( "safe_filename('%s') starting\n" , name )
     }
 
@@ -59,7 +59,7 @@ func safe_filename( name string ) string {
         ext  = rv[dotp:]
     }
 
-    if do_debug {
+    if flag_debug {
         fmt.Printf( "safe_filename()   base='%s' ext='%s'\n" , base , ext )
     }
 
@@ -70,7 +70,7 @@ func safe_filename( name string ) string {
         n := 1
         x := fmt.Sprintf( "%s-%d%s" , base , n , ext )
 
-        if do_debug {
+        if flag_debug {
             fmt.Printf( "safe_filename()   x='%s'\n" , x )
         }
 
@@ -78,7 +78,7 @@ func safe_filename( name string ) string {
             n ++
             x = fmt.Sprintf( "%s-%d%s" , base , n , ext )
 
-            if do_debug {
+            if flag_debug {
                 fmt.Printf( "safe_filename()   x='%s'\n" , x )
             }
         }
@@ -89,7 +89,7 @@ func safe_filename( name string ) string {
     ////////////////////////////////////////
     // Return what we found
 
-    if do_debug {
+    if flag_debug {
         fmt.Printf( "safe_filename('%s') returning '%s'\n" , name , rv )
     }
 

@@ -34,8 +34,11 @@ var (
 //
 // Values will be set by command line options
 
-var do_debug        bool    = false
-var do_overwrite    bool    = false
+var flag_debug      bool    = false
+var flag_overwrite  bool    = false
+var flag_collapse   bool    = false
+
+// future
 var tablet_addr     string  = "10.11.99.1"
 
 ////////////////////////////////////////
@@ -49,6 +52,7 @@ type DocInfo struct {
     full_name       string
     size            int64
     pages           int64
+    find_by         string
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,15 +67,22 @@ Download PDF files from a reMarkable tablet
 
 Commands
 
-    list        List files on tablet
-    backup      Download ALL files on tablet, to PDF files
-    version     Show the program's version info
+    list            List all files on tablet
+    backup          Download ALL files on tablet, to PDF files
+    download ___    Download one or more files, to PDF file(s)
+
+    version         Show the program's version info
+    help            Show this help message.
 
 Options
+
+    -c      Collapse output filenames. All output files will be written to
+            the current directory, no sub-directories will be created.
 
     -f      Overwrite existing files.
 
     -h      Show this help message.
+
 `
 
     fmt.Printf( msg , prog_name )
@@ -110,9 +121,10 @@ func main() {
     var helpme  = false
 
     flag.Usage = usage
-    flag.BoolVar( &helpme       , "h" , helpme       , "" )
-    flag.BoolVar( &do_debug     , "D" , do_debug     , "" )
-    flag.BoolVar( &do_overwrite , "f" , do_overwrite , "" )
+    flag.BoolVar( &helpme         , "h" , helpme         , "" )
+    flag.BoolVar( &flag_debug     , "D" , flag_debug     , "" )
+    flag.BoolVar( &flag_overwrite , "f" , flag_overwrite , "" )
+    flag.BoolVar( &flag_collapse  , "c" , flag_collapse  , "" )
     flag.Parse()
 
     ////////////////////////////////////////
@@ -127,9 +139,11 @@ func main() {
 
     if len( flag.Args() ) > 0 {
         switch flag.Args()[0] {
+            case "help"     : usage()
             case "version"  : do_version()
-            case "backup"   : backup( read_files() )
-            case "list"     : do_list( read_files() )
+            case "backup"   : do_backup()
+            case "list"     : do_list()
+            case "download" : do_download( flag.Args()[1:]... )
             default         : usage()
         }
     } else {
