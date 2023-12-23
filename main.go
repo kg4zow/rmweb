@@ -61,27 +61,32 @@ type DocInfo struct {
 
 func usage( ) {
 
-    msg := `%s [options] COMMAND
+    msg := `%s [options] COMMAND [...]
 
-Download PDF files from a reMarkable tablet
+Download PDF files from a reMarkable tablet.
 
 Commands
 
-    list            List all files on tablet
-    backup          Download ALL files on tablet, to PDF files
-    download ___    Download one or more files, to PDF file(s)
+    list     ___    List all files on tablet.
+    download ___    Download one or more documents to PDF file(s).
 
     version         Show the program's version info
     help            Show this help message.
 
 Options
 
-    -c      Collapse output filenames. All output files will be written to
-            the current directory, no sub-directories will be created.
+    -c      Collapse filenames, i.e. don't create any sub-directories.
+            All PDFs will be written to the current directory.
 
     -f      Overwrite existing files.
 
     -h      Show this help message.
+
+Commands with "___" after them allow you to specify one or more patterns
+to search for. Only matching documents will be (listed, downloaded, etc.)
+If a UUID is specified, that *exact* document will be selected. Otherwise,
+all documents whose names (as seen in the tablet's UI) contain the pattern
+will be selected.
 
 `
 
@@ -107,6 +112,19 @@ func do_version( args ...string ) {
     }
 
     fmt.Println( prog_url )
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Show deprecation messages
+
+func do_backup() {
+    msg := `The 'backup' command has been deprecated.
+Please use 'download' instead.
+`
+
+    fmt.Print( msg )
+    os.Exit( 1 )
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,8 +160,8 @@ func main() {
             case "help"     : usage()
             case "version"  : do_version()
             case "backup"   : do_backup()
-            case "list"     : do_list()
-            case "download" : do_download( flag.Args()[1:]... )
+            case "list"     : do_list     ( flag.Args()[1:]... )
+            case "download" : do_download ( flag.Args()[1:]... )
             default         : usage()
         }
     } else {

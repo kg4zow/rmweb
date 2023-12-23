@@ -19,37 +19,46 @@ import (
 func do_download( args ...string ) {
 
     ////////////////////////////////////////
-    // Make sure we *have* something to look for.
-
-    if len( args ) < 1 {
-        fmt.Println( "ERROR: 'download' requires a UUID or filename\n" )
-        os.Exit( 1 )
-    }
-
-    ////////////////////////////////////////
     // Read the contents of the tablet
 
     the_files := read_files()
 
     ////////////////////////////////////////////////////////////
-    // Build the list of UUIDs to be downloaded
+    // Figure out which UUIDs we'll be downloading
 
     get_uuids := make( map[string]bool , len( the_files ) )
 
-    for _,pattern := range args {
-        look_for := strings.ToLower( pattern )
+    ////////////////////////////////////////
+    // If no pattern, include every UUID
 
-        ////////////////////////////////////////
-        // Figure out which items match the current pattern
+    if len( args ) < 1 {
+        for uuid,_ := range the_files {
+            get_uuids[uuid] = true
+        }
 
-        this_match := match_files( the_files , look_for )
+        if flag_debug {
+            fmt.Printf( "do_list: including all UUIDs\n" )
+        }
 
-        if len( this_match ) > 0 {
-            for _,x := range this_match {
-                get_uuids[x] = true
+    ////////////////////////////////////////
+    // Otherwise, process each pattern
+
+    } else {
+        for _,pattern := range args {
+            look_for := strings.ToLower( pattern )
+
+            ////////////////////////////////////////
+            // Figure out which items match the current pattern
+
+            this_match := match_files( the_files , look_for )
+
+            if len( this_match ) > 0 {
+                for _,x := range this_match {
+                    get_uuids[x] = true
+                }
+            } else {
+                fmt.Printf( "no matching items found for '%s'\n" , pattern )
             }
-        } else {
-            fmt.Printf( "no matching items found for '%s'\n" , pattern )
         }
     }
 
