@@ -28,28 +28,9 @@ One of the ideas on my list is a more "general" command line utility, written in
 
 ### Download
 
-The executables are stored in my [Keybase](https://keybase.io/) public directory. If you don't use Keybase, the [`https://jms1.pub/`](https://jms1.pub/) web site is served from that directory, using [Keybase Sites](https://book.keybase.io/sites).
+I'm using Github's "releases" mechanism. There should be a "Latest release" section to the right, if you're not reading this through the Github web interface, click [here](https://github.com/kg4zow/rmweb/releases).
 
-The examples below assume that a `$HOME/bin/` directory exists, and is in your `PATH`.
-
-* **Keybase**: copy whichever binaries you need from `/keybase/public/jms1/rmweb/` to wherever you need them. You may want to rename your copy to just `rmweb`.
-
-    ```
-    $ cd ~/bin/
-    $ cp /keybase/public/jms1/rmweb/v0.04/rmweb-darwin-arm64 rmweb
-    $ chmod u=rwx,go=rx rmweb
-    ```
-
-* **Web**: download whichever binaries you need from [`https://jms1.pub/rmweb/`](https://jms1.pub/rmweb/). Again, you may want to rename your copy to just `rmweb`.
-
-    ```
-    $ cd ~/bin/
-    $ curl -o rmweb https://jms1.pub/rmweb/v0.04/rmweb-darwin-arm64
-    $ chmod u=rwx,go=rx rmweb
-    ```
-
-However you do it, store the executable in a directory in your `PATH`, and make sure its permissions are set to be executable.
-
+Download the appropriate executable for the machine where you plan to run the program. Store it in a directory in your `PATH`, and make sure its permissions are set to be executable. I also recommend renaming it to `rmweb`.
 
 ### Compiling the Program
 
@@ -75,7 +56,14 @@ If you want to compile the program from source ...
 
 This will build the correct binary for your computer, under the `out/` directory. It will also create `rmweb` in the current dirctory, as a symbolic link to that binary.
 
-Note that you could also run "`make all`" to build binaries for a list of architectures. (This is how I build the executables I store in Keybase.) The list of architectures is set in the "`ALL_ARCHES :=`" line in `Makefile`, and currently includes the list shown above.
+Note that you could also run "`make all`" to build binaries for a list of architectures. (This is how I build the executables when creating a release.) The list of architectures is set in the "`ALL_ARCHES :=`" line in `Makefile`, and currently includes the following:
+
+* `darwin/amd64` (Apple Intel 64-bit)
+* `darwin/arm64` (Apple M1/M2)
+* `linux/386` (Linux Intel 32-bit)
+* `linux/amd64` (Linux Intel 64-bit)
+* `windows/386` (windows 32-bit)
+* `windows/amd64` (windows 64-bit)
 
 You can see a list of all *possible* `GOOS`/`GOARCH` combinations in your installed copy of `go` by running "`go tool dist list`".
 
@@ -159,11 +147,31 @@ $ rmweb download 9e6891eb-2558-4e70-b6fc-d03b2d75614b
 Downloading 'Quick sheets.pdf' ... 2577411 ... ok
 ```
 
-... or a portion of the filename.
+... or a portion of the filename ...
 
 ```
 $ rmweb download quick
 Downloading 'Quick sheets-1.pdf' ... 2577411 ... ok
+```
+
+... or nothing at all, in which case it will download all documents.
+
+```
+$ rmweb download
+Creating    'Amateur Radio' ... ok
+Downloading 'Amateur Radio/D-STAR.pdf' ... 1792627 ... ok
+Downloading 'Amateur Radio/RTL-SDR.pdf' ... 120895 ... ok
+Downloading 'Documentation to write.pdf' ... 674706 ... ok
+Creating    'Ebooks' ... ok
+Downloading 'Ebooks/The Art of Unix Programming.pdf' ... 7856878 ... ok
+Downloading 'Ebooks/The Cathedral & the Bazaar.pdf' ... 1382013 ... ok
+...
+Downloading 'Quick sheets.pdf' ... 2577411 ... ok
+Downloading 'ReMarkable 2 Info.pdf' ... 1451907 ... ok
+Downloading 'TODO.pdf' ... 258263 ... ok
+Creating    'Work' ... ok
+Downloading 'Work/2023-11 Daily.pdf' ... 5114386 ... ok
+Downloading 'Work/2023-12 Daily.pdf' ... 2464473 ... ok
 ```
 
 Notes about patterns:
@@ -200,26 +208,3 @@ Other notes:
     $ rmweb -f download quick
     Downloading 'Quick sheets.pdf' ... 2577411 ... ok
     ```
-
-### Download ALL documents to PDF files
-
-To download ALL documents as PDF files, use the "`download`" command without a pattern.
-
-```
-$ rmweb download
-Creating    'Amateur Radio' ... ok
-Downloading 'Amateur Radio/D-STAR.pdf' ... 1792627 ... ok
-Downloading 'Amateur Radio/RTL-SDR.pdf' ... 120895 ... ok
-Downloading 'Documentation to write.pdf' ... 674706 ... ok
-Creating    'Ebooks' ... ok
-Downloading 'Ebooks/The Art of Unix Programming.pdf' ... 7856878 ... ok
-Downloading 'Ebooks/The Cathedral & the Bazaar.pdf' ... 1382013 ... ok
-...
-Downloading 'Quick sheets.pdf' ... 2577411 ... ok
-Downloading 'ReMarkable 2 Info.pdf' ... 1451907 ... ok
-Downloading 'TODO.pdf' ... 258263 ... ok
-Creating    'Work' ... ok
-Downloading 'Work/2023-11 Daily.pdf' ... 5114386 ... ok
-Downloading 'Work/2023-12 Daily.pdf' ... 2464473 ... ok
-```
-
