@@ -324,7 +324,9 @@ Downloading 'Work/2024 Daily.rmdoc' ... 7485556 ... ok
 
 ### Other notes
 
-* As each file downloads, the program shows a counter of how many bytes have been read from the tablet. For larger files you'll notice a time delay before this counter starts. This delay is when the tablet is building the PDF file.
+* As each file downloads, the program shows a counter of how many bytes have been read from the tablet. For larger files you'll notice a time delay before this counter starts. This delay is when the tablet is building the file.
+
+    [This video](https://jms1.pub/reMarkable/rmweb-time-difference.mov) shows this time delay. along with the difference between how long it takes to generate a PDF file (~25 seconds for this 380-page PDF-backed document) and how long it takes to build an `.rmdoc` file (~5 seconds for the same document).
 
 * If an output file already exists, the program will add "`-1`", "`-2`", etc. to the filename until it finds a name which doesn't already exist. If you want to *overwrite* existing files, use the "`-f`" option.
 
