@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v0.7 - 2024-09-07
+
+Added "download rmdoc" functionality
+
+* added download_rmdoc()
+* replaced '/', '\', and ':' in visible names, with underscores
+* moved PassThru() (prints byte counts while reading data from a file)
+  from download_pdf.go to do_download.go, so other download_xxx() can
+  use it
+* included '-D' in usage() message
+
 ## v0.06 - 2023-12-22
 
 * Added `download` command
