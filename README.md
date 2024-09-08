@@ -2,7 +2,7 @@
 
 John Simpson `<jms1@jms1.net>` 2023-12-17
 
-Last updated 2023-12-19
+Last updated 2024-09-07
 
 This program lists all documents on a reMarakble tablet, or downloads them all as PDF files, using the tablet's built-in web interface.
 
