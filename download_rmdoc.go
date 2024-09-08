@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// rmweb/download_pdf.go
-// John Simpson <jms1@jms1.net> 2023-12-17
+// rmweb/download_rmdoc.go
+// John Simpson <jms1@jms1.net> 2024-09-07
 //
-// Download a PDF file from a reMarkable tablet
+// Download an RMDOC file from a reMarkable tablet
 
 package main
 
@@ -17,9 +17,39 @@ import (
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Download a PDF file
+// Is a file a ZIP file or not?
 
-func download_pdf( uuid string , localfile string ) {
+func is_zipfile( filename string ) bool {
+
+    f, err := os.Open( filename )
+    if err != nil {
+        fmt.Printf( "ERROR: can't read %s: %v\n" , filename , err )
+        os.Exit( 1 )
+    }
+    defer f.Close()
+
+    b := make( []byte , 4 )
+    nr, err := f.Read( b )
+    if err != nil {
+        fmt.Sprintf( "ERROR: can't read 4 bytes from %s: %v\n" , filename , err )
+        os.Exit( 1 )
+    }
+
+    if nr != 4 {
+        fmt.Printf( "ERROR: expected 4 bytes from %s, only got %d" , filename , nr )
+        os.Exit( 1 )
+    }
+    return ( b[0] == 0x50 && b[1] == 0x4b && b[2] == 0x03 && b[3] == 0x04 )
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Download an RMDOC file
+
+var know_can_rmdoc  bool = false
+var can_rmdoc       bool = false
+
+func download_rmdoc( uuid string , localfile string ) {
 
     ////////////////////////////////////////////////////////////
     // If the output filename contains any directory names,
@@ -77,26 +107,21 @@ func download_pdf( uuid string , localfile string ) {
     ////////////////////////////////////////
     // Request the file
 
-    url := "http://" + tablet_addr + "/download/" + uuid + "/placeholder"
+    url := "http://" + tablet_addr + "/download/" + uuid + "/rmdoc"
 
     resp, err := http.Get( url )
     if err != nil {
-        fmt.Printf( "ERROR: %v" , err )
+        fmt.Printf( "ERROR: can't download '%s': %v" , url , err )
         os.Exit( 1 )
     }
-
-    defer resp.Body.Close()
 
     ////////////////////////////////////////
     // Create output file
 
     dest, err := os.Create( localfile )
     if err != nil {
-        fmt.Printf( "ERROR: os.Create('%s'): %v" , localfile , err )
-        os.Exit( 1 )
+        fmt.Printf( "ERROR: can't create '%s': %v\n" , localfile , err )
     }
-
-    defer dest.Close()
 
     ////////////////////////////////////////
     // Copy the output to the file
@@ -110,7 +135,39 @@ func download_pdf( uuid string , localfile string ) {
     }
 
     ////////////////////////////////////////
-    // done
+    // Finished with transfer
 
+    dest.Close()
+    resp.Body.Close()
     fmt.Printf( "%d ... ok\n" , total )
+
+    ////////////////////////////////////////
+    // Check whether the output file is a ZIP file
+
+    if ! know_can_rmdoc {
+        know_can_rmdoc = true
+
+        if is_zipfile( localfile ) {
+            can_rmdoc = true
+        }
+
+        if ! can_rmdoc {
+            ////////////////////////////////////////
+            // Remove the file we just downloaded (it isn't an RMDOC file)
+
+            os.Remove( localfile )
+
+            ////////////////////////////////////////
+            // Tell the user what's going on
+
+            if ! flag_dl_pdf {
+                fmt.Println( "FATAL: this tablet's software cannot download .rmdoc files, cannot continue" )
+                os.Exit( 1 )
+            } else {
+                fmt.Printf( "WARNING: this tablet's software cannot download .rmdoc files\n" )
+                flag_dl_rmdoc = false
+            }
+        }
+    }
+
 }

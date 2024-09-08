@@ -7,10 +7,35 @@ package main
 
 import (
     "fmt"
+    "io"
     "os"
     "sort"
     "strings"
 )
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Passthru wrapper for io.Reader, prints total bytes while reading
+// used by download_xxx() functions
+
+type PassThru struct {
+    io.Reader
+    total       int64
+}
+
+func (pt *PassThru) Read( p []byte ) ( int , error ) {
+    n, err      := pt.Reader.Read( p )
+    pt.total    += int64( n )
+
+    if err == nil {
+        x := fmt.Sprintf( "%d" , pt.total )
+        b := fmt.Sprintf( strings.Repeat( "\b" , len( x ) ) )
+
+        fmt.Print( x , b )
+    }
+
+    return n , err
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -95,12 +120,21 @@ func do_download( args ...string ) {
             ////////////////////////////////////////
             // Download the file
 
-            lname := the_files[uuid].full_name + ".pdf"
+            lname_pdf   := the_files[uuid].full_name + ".pdf"
+            lname_rmdoc := the_files[uuid].full_name + ".rmdoc"
+
             if ! flag_overwrite {
-                lname = safe_filename( lname )
+                lname_pdf   = safe_filename( lname_pdf   )
+                lname_rmdoc = safe_filename( lname_rmdoc )
             }
 
-            download_pdf( uuid , lname )
+            if flag_dl_pdf {
+                download_pdf( uuid , lname_pdf )
+            }
+
+            if flag_dl_rmdoc {
+                download_rmdoc( uuid , lname_rmdoc )
+            }
         }
     }
 

@@ -33,11 +33,17 @@ var (
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Values will be set by command line options
+//
+// NOTE: if new 'flag_dl_xxx' items are needed to support new file types,
+// be sure to update the check at the end of download_rmdoc() to check for
+// the new file types.
 
 var flag_debug      bool    = false
 var flag_overwrite  bool    = false
 var flag_collapse   bool    = false
 var tablet_addr     string  = "10.11.99.1"
+var flag_dl_pdf     bool    = false         // default is set in main() below
+var flag_dl_rmdoc   bool    = false         // default is set in main() below
 
 ////////////////////////////////////////
 // All files and directories on the tablet
@@ -61,7 +67,7 @@ func usage( ) {
 
     msg := `%s [options] COMMAND [...]
 
-Download PDF files from a reMarkable tablet.
+Download files from a reMarkable tablet.
 
 Commands
 
@@ -73,17 +79,29 @@ Commands
 
 Options
 
-    -c      Collapse filenames, i.e. don't create any sub-directories.
-            All PDFs will be written to the current directory.
+-p      Download PDF files.
 
-    -f      Overwrite existing files.
+-d      Download RMDOC files. This requires that the tablet have
+        software version version 3.10 or later.
 
-    -I ___  Specify the tablet's IP address. Default is '10.11.99.1',
-            which the tablet uses when connected via USB cable. Note that
-            unless you've "hacked" your tablet, the web interface is not
-            available via any interface other than the USB cable.
+-a      Download all available file types.
 
-    -h      Show this help message.
+-c      Collapse filenames, i.e. don't create any sub-directories.
+        All files will be written to the current directory.
+
+-f      Overwrite existing files.
+
+-I ___  Specify the tablet's IP address. Default is '10.11.99.1',
+        which the tablet uses when connected via USB cable. Note that
+        unless you've "hacked" your tablet, the web interface is not
+        available via any interface other than the USB cable.
+
+-D      Show debugging messages.
+
+-h      Show this help message.
+
+If no file types are explicitly requested (i.e. no '-a', '-p' or '-d'
+options are used), the program will download PDF files only by default.
 
 Commands with "___" after them allow you to specify one or more patterns
 to search for. Only matching documents will be (listed, downloaded, etc.)
@@ -139,7 +157,10 @@ func main() {
     ////////////////////////////////////////
     // Parse command line options
 
-    var helpme  = false
+    var helpme      bool    = false
+    var want_pdf    bool    = false
+    var want_rmdoc  bool    = false
+    var want_all    bool    = false
 
     flag.Usage = usage
     flag.BoolVar  ( &helpme         , "h" , helpme         , "" )
@@ -147,6 +168,9 @@ func main() {
     flag.BoolVar  ( &flag_overwrite , "f" , flag_overwrite , "" )
     flag.BoolVar  ( &flag_collapse  , "c" , flag_collapse  , "" )
     flag.StringVar( &tablet_addr    , "I" , tablet_addr    , "" )
+    flag.BoolVar  ( &want_pdf       , "p" , want_pdf       , "" )
+    flag.BoolVar  ( &want_rmdoc     , "d" , want_rmdoc     , "" )
+    flag.BoolVar  ( &want_all       , "a" , want_all       , "" )
     flag.Parse()
 
     ////////////////////////////////////////
@@ -154,6 +178,20 @@ func main() {
 
     if ( helpme ) {
         usage()
+    }
+
+    ////////////////////////////////////////
+    // Figure out which file type options were requested
+
+    if want_all {
+        flag_dl_pdf     = true
+        flag_dl_rmdoc   = true
+    } else if want_pdf || want_rmdoc {
+        flag_dl_pdf     = want_pdf
+        flag_dl_rmdoc   = want_rmdoc
+    } else {
+        flag_dl_pdf     = true
+        flag_dl_rmdoc   = false
     }
 
     ////////////////////////////////////////

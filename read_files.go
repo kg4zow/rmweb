@@ -19,6 +19,12 @@ import (
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Replace problematic characters in documents' visible names
+
+var name_cleaner = strings.NewReplacer( "/" , "_" , "\\" , "_" , ":" , "_" )
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // read_files
 //
 // Send a series of "POST http://10.11.99.1/documents/" requests to retrieve
@@ -95,11 +101,18 @@ func read_files() ( map[string]DocInfo ) {
             id          := v["ID"].(string)
             parent      := v["Parent"].(string)
             folder      := bool( v["Type"].(string) == "CollectionType" )
-            name        := v["VissibleName"].(string)
+            vis_name    := v["VissibleName"].(string)
+
+            ////////////////////////////////////////
+            // Convert all '/', '\', and ':' with underscores
+
+            name := name_cleaner.Replace( vis_name )
+
+            ////////////////////////////////////////
 
             if ! folder {
                 fmt.Sscan( v["sizeInBytes"].(string) , &size )
-                pages       = int( v["pageCount"].(float64) )
+                pages = int( v["pageCount"].(float64) )
             }
 
             if flag_debug {
