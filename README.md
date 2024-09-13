@@ -1,8 +1,20 @@
+&#x1F6D1; **"Cloud Archive" files**
+
+The reMarkable cloud has a feature, available to customers with a paid account, which lets you "archive" documents to the cloud. This means that the document's files are in the cloud, but only the documents *metadata* is stored on your tablet.
+
+At first glance, the web API's "list files" request doesn't seem to provide any way to tell if a document is "archived to the cloud" or not. I don't use the reMarkable cloud, so at the moment I have no way to *create* any "cloud archive" files to experiment with.
+
+In addition, attempting to *download* such a document via the web interface can cause the tablet's internal web server to lock up.
+
+If you have a paid cloud account, make sure all of your documents are on your tablet (i.e. not "archived to the cloud") before using this program.
+
+---
+
 # `rmweb`
 
 John Simpson `<jms1@jms1.net>` 2023-12-17
 
-Last updated 2024-09-07
+Last updated 2024-09-12
 
 This program lists all documents on a reMarakble tablet, or downloads them all as PDF files, using the tablet's built-in web interface.
 
