@@ -81,7 +81,7 @@ out/$(NAME)-linux-arm: go.mod Makefile version.txt $(SOURCES)
 
 ###############################################################################
 #
-# Push (publish) executables
+# Push (publish) executables to Keybase (old)
 
 push: all
 	TAG="v$$( head -1 version.txt )" ; \
