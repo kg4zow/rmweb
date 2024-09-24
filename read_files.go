@@ -59,6 +59,7 @@ func read_files() ( map[string]DocInfo ) {
         buf             := bytes.NewBufferString( "" )
 
         if flag_debug {
+            fmt.Println( "/========================================" )
             fmt.Println( "POST " + url )
         }
 
@@ -75,6 +76,11 @@ func read_files() ( map[string]DocInfo ) {
         resp_bytes,err := io.ReadAll( resp.Body )
         if ( err != nil ) {
             log.Fatal( err )
+        }
+
+        if flag_debug {
+            fmt.Print( string( resp_bytes[:] ) )
+            fmt.Println( "\\========================================" )
         }
 
         ////////////////////////////////////////
@@ -109,10 +115,18 @@ func read_files() ( map[string]DocInfo ) {
             name := name_cleaner.Replace( vis_name )
 
             ////////////////////////////////////////
+            // Get size and page count from data
 
             if ! folder {
-                fmt.Sscan( v["sizeInBytes"].(string) , &size )
-                pages = int( v["pageCount"].(float64) )
+                if _,ok := v["sizeInBytes"] ; ok {
+                    fmt.Sscan( v["sizeInBytes"].(string) , &size )
+                    list_size = true
+                }
+
+                if _,ok := v["pageCount"] ; ok {
+                    pages = int( v["pageCount"].(float64) )
+                    list_pages = true
+                }
             }
 
             if flag_debug {

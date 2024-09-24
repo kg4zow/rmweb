@@ -9,8 +9,12 @@ import (
     "fmt"
     "os"
     "sort"
+    "strconv"
     "strings"
 )
+
+var list_size   bool = false
+var list_pages  bool = false
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -142,7 +146,6 @@ func do_list( args ...string ) {
         strings.Repeat( "-" , l_pages ) ,
         strings.Repeat( "-" , l_name  ) )
 
-
     for _,uuid := range show_names {
         if the_files[uuid].folder {
             fmt.Printf( "%-36s %*s %*s %s/\n" ,
@@ -152,10 +155,21 @@ func do_list( args ...string ) {
                 the_files[uuid].full_name )
 
         } else {
-            fmt.Printf( "%-36s %*d %*d %s\n" ,
+            var d_size  string = ""
+            var d_pages string = ""
+
+            if list_size {
+                d_size = strconv.FormatInt( the_files[uuid].size , 10 )
+            }
+
+            if list_pages {
+                d_pages = strconv.FormatInt( the_files[uuid].pages , 10 )
+            }
+
+            fmt.Printf( "%-36s %*s %*s %s\n" ,
                 uuid ,
-                l_size  , the_files[uuid].size  ,
-                l_pages , the_files[uuid].pages ,
+                l_size  , d_size  ,
+                l_pages , d_pages ,
                 the_files[uuid].full_name )
         }
     }
