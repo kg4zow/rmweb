@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.8 - 2024-09-23
+
+Handle directory list JSON not containing file size or page count.
+(Looks like reMarkable removed this between 3.10 and 3.14 software.)
+https://github.com/kg4zow/rmweb/issues/1
+
+* `read_files()` check for JSON keys before trying to read them.
+* `do_list()` Dondt show size or page count if the directory list JSON
+  didn't contain them.
+
 ## v0.7 - 2024-09-07
 
 Added "download rmdoc" functionality
