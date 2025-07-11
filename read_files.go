@@ -163,7 +163,7 @@ func read_files() ( map[string]DocInfo ) {
             f.full_name     = full_name
             f.size          = int64( size )
             f.pages         = int64( pages )
-            f.find_by       = strings.ToLower( name )
+            f.find_by       = strings.ToLower( full_name )
 
             rv[f.id] = f
 
