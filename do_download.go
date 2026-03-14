@@ -15,6 +15,24 @@ import (
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Print an overall progress bar
+// current and total are the number of files downloaded so far and in total
+
+func print_progress( current int , total int ) {
+    width   := 30
+    filled  := current * width / total
+    bar     := strings.Repeat( "=" , filled )
+    if filled < width {
+        bar += ">"
+        bar += strings.Repeat( " " , width - filled - 1 )
+    } else {
+        bar = strings.Repeat( "=" , width )
+    }
+    fmt.Printf( "Progress:   [%s] %d/%d\n" , bar , current , total )
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Passthru wrapper for io.Reader, prints total bytes while reading
 // used by download_xxx() functions
 
@@ -112,6 +130,18 @@ func do_download( args ...string ) {
     sort.SliceStable( get_names , sortby_name )
 
     ////////////////////////////////////////////////////////////
+    // Count total number of downloads for the progress bar
+
+    total_downloads := 0
+    for _,uuid := range get_names {
+        if ! the_files[uuid].folder {
+            if flag_dl_pdf   { total_downloads ++ }
+            if flag_dl_rmdoc { total_downloads ++ }
+        }
+    }
+    done_count := 0
+
+    ////////////////////////////////////////////////////////////
     // Process entries
 
     for _,uuid := range get_names {
@@ -130,10 +160,14 @@ func do_download( args ...string ) {
 
             if flag_dl_pdf {
                 download_pdf( uuid , lname_pdf )
+                done_count ++
+                print_progress( done_count , total_downloads )
             }
 
             if flag_dl_rmdoc {
                 download_rmdoc( uuid , lname_rmdoc )
+                done_count ++
+                print_progress( done_count , total_downloads )
             }
         }
     }
